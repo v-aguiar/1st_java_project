@@ -1,5 +1,6 @@
 package com.group.cartapi.service.impl;
 
+import com.group.cartapi.enumeration.PaymentOption;
 import com.group.cartapi.model.Cart;
 import com.group.cartapi.model.Item;
 import com.group.cartapi.repository.CartRepository;
@@ -28,7 +29,14 @@ public class CartServiceImpl implements CartService {
   }
 
   @Override
-  public Cart closeCart(Long id, int paymentOption) {
-    return null;
+  public Cart closeCart(Long id, int paymentOptionNumber) {
+    Cart cart = getCart(id);
+    if (cart.getItens().isEmpty()) {
+      throw new RuntimeException("Cart is empty");
+    }
+    PaymentOption paymentOption = paymentOptionNumber == 0 ? PaymentOption.MONEY : PaymentOption.CARD;
+    cart.setPaymentOption(paymentOption);
+    cart.setClosed(true);
+    return cartRepository.save(cart);
   }
 }
